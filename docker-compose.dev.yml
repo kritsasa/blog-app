@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+    app:
+        build:
+            context: .
+            dockerfile: Dockerfile.dev
+        image: blog-app
+        ports:
+            - "3000-3000"
+        volumes:
+            - .:/app
+            - /app/node_modules
+        environment:
+            DATABASE_URL: "postgresql://postgres:password@localhost:1234/blog?schema=public"
+        depends_on:
+            - db
+
+    db:
+        image: postgres:15
+        restart: "no"
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: password
+            POSTGRES_DB: blog
+        ports:
+            - "6789:5432"
+        volumes:
+            - pdgada:/var/lib/postgresql/data
+
+volumes:
+    pdgada:
