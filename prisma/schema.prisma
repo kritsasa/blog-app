@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -11,4 +5,76 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  name     String
+  email    String   @unique
+  password String
+  role     Role     @default(USER)
+  posts    Post[]
+  comments Comment[]
+  createSt DateTime @default(now())
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model Post {
+  id         Int        @id @default(autoincrement())
+  title      String
+  slug       String     @unique
+  content    String
+  authorId   Int
+  // authorId reference with id from table User
+  author     User       @relation(fields: [authorId], references: [id])
+  categoryId Int
+  category   Category   @relation(fields: [categoryId], references: [id])
+  tags       PostTag[]
+  comments   Comment[]
+  createAt   DateTime   @default(now())
+  updateAt   DateTime   @updatedAt
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  posts Post[]
+}
+
+model Tag {
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  posts PostTag[]
+}
+
+// เก็บคู่ postId | tagId
+// เก็บความสัมพันธ์ของ Post กับ Tag
+// postId | tagId
+//  10 | 1
+//  10 | 2
+//  10 | 3
+model PostTag {
+  postId Int
+  tagId  Int
+
+  post Post @relation(fields: [postId], references: [id])
+  tag  Tag  @relation(fields: [tagId], references: [id])
+
+  // สมมติมี 10 | 3
+  // ห้ามมีคู่นี้ซ้ำ
+  @@id([postId, tagId])
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
+  postId    Int
+  userId    Int
+  post      Post     @relation(fields: [postId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
 }

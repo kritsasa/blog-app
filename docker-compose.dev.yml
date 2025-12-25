@@ -12,7 +12,7 @@ services:
             - .:/app
             - /app/node_modules
         environment:
-            DATABASE_URL: "postgresql://postgres:password@localhost:1234/blog?schema=public"
+            DATABASE_URL: "postgresql://postgres:password@localhost:6789/blog?schema=public"
         depends_on:
             - db
 
