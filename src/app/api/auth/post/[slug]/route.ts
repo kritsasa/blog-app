@@ -39,6 +39,10 @@ export async function GET(
       },
     });
 
+    if (!postsData) {
+      return NextResponse.json({ message: "Post not found" }, { status: 404 });
+    }
+
     return NextResponse.json(postsData, { status: 200 });
   } catch {
     return NextResponse.json({ message: "Failed to post." }, { status: 400 });
@@ -51,7 +55,7 @@ export async function PUT(
 ) {
   const payload = await verifyToken(req);
   if (!payload) {
-    return NextResponse.redirect("/login", 302);
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
   const user = await prisma.user.findUnique({
@@ -64,7 +68,7 @@ export async function PUT(
 
   try {
     const { slug: slugSearch } = await params;
-    const { title, content, categoryId, tagIds } = await req.json();
+    const { title, content, categoryId, tagIds = [] } = await req.json();
 
     const post = await prisma.post.findUnique({
       where: { slug: slugSearch },
@@ -74,32 +78,33 @@ export async function PUT(
       return NextResponse.json({ message: "Post not found" }, { status: 404 });
     }
 
-    if (!title || !content || !categoryId) {
+    if (!title?.trim() || !content?.trim() || !categoryId) {
       return NextResponse.json(
-        { message: "Missing required fields: title, content, or categoryId" },
+        { message: "Invalid input" },
         { status: 400 }
       );
     }
 
-    const slug = slugify(title, {
-      lower: true,
-      strict: true,
-    });
-
+    
     const isAdmin = user.role === "ADMIN";
     const isOwner = post.authorId === user.id;
-
+    
     if (!isAdmin && !isOwner) {
       return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
+
+    const slug = slugify(title.trim(), {
+      lower: true,
+      strict: true,
+    });
 
     await prisma.$transaction(async (tx) => {
       const updatePost = await tx.post.update({
         where: { slug: slugSearch },
         data: {
-          title,
+          title: title.trim(),
           slug,
-          content,
+          content: content.trim(),
           categoryId,
         },
       });
@@ -138,7 +143,7 @@ export async function DELETE(
 ) {
   const payload = await verifyToken(req);
   if (!payload) {
-    return NextResponse.redirect("/login", 302);
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
   const user = await prisma.user.findUnique({

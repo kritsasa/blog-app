@@ -5,58 +5,81 @@ import { verifyToken } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
-    const postsData = await prisma.post.findMany({
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        content: true,
-        createAt: true,
-        author: { select: { id: true, name: true } },
-        category: { select: { id: true, name: true } },
-        tags: {
-          select: {
-            tag: { select: { id: true, name: true } },
+    const { searchParams } = new URL(req.url);
+
+    const page = Number(searchParams.get("page") ?? 1);
+    const limit = Number(searchParams.get("limit") ?? 10);
+
+    // page 1, limit 10 = 0-9
+    // page 2, limit 10 = 10-19
+    const skip = (page - 1) * limit;
+
+    const [postsData, total] = await prisma.$transaction([
+      prisma.post.findMany({
+        skip,
+        take: limit,
+        orderBy: { createAt: "desc" },
+        select: {
+          id: true,
+          title: true,
+          slug: true,
+          content: true,
+          createAt: true,
+          author: { select: { id: true, name: true } },
+          category: { select: { id: true, name: true } },
+          tags: {
+            select: {
+              tag: { select: { id: true, name: true } },
+            },
+          },
+          comments: {
+            orderBy: { createdAt: "desc" },
+            select: {
+              id: true,
+              content: true,
+              createdAt: true,
+              user: {
+                select: { id: true, name: true },
+              },
+            },
           },
         },
-        comments: {
-          orderBy: { createdAt: "desc" },
-          select: {
-            id: true,
-            content: true,
-            createdAt: true,
-            user: {
-              select: { id: true, name: true }
-            }
-          }
-        }
+      }),
+      prisma.post.count(),
+    ]);
+
+    return NextResponse.json({
+      data: postsData,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
       },
     });
-
-    return NextResponse.json(postsData, { status: 200 });
   } catch {
-    return NextResponse.json({ message: "Failed to post." }, { status: 400 });
+    return NextResponse.json(
+      { message: "Failed to fetch posts" },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(req: NextRequest) {
   const payload = await verifyToken(req);
   if (!payload) {
-    return NextResponse.redirect("/login", 302);
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
 
   const authorId = payload.id as number;
 
   try {
     const { title, content, categoryId, tagIds } = await req.json();
-    if (!title || !content || !categoryId) {
-      return NextResponse.json(
-        { message: "Missing required fields: title, content, or categoryId" },
-        { status: 400 }
-      );
+    if (!title?.trim() || !content?.trim() || !categoryId) {
+      return NextResponse.json({ message: "Invalid input" }, { status: 400 });
     }
 
-    const slug = slugify(title, {
+    const slug = slugify(title.trim(), {
       lower: true,
       strict: true,
     });
@@ -64,9 +87,9 @@ export async function POST(req: NextRequest) {
     await prisma.$transaction(async (tx) => {
       const newPost = await tx.post.create({
         data: {
-          title,
+          title: title.trim(),
           slug,
-          content,
+          content: content.trim(),
           authorId,
           categoryId,
         },
@@ -88,6 +111,9 @@ export async function POST(req: NextRequest) {
       { status: 201 }
     );
   } catch {
-    return NextResponse.json({ message: "Failed to post." }, { status: 400 });
+    return NextResponse.json(
+      { message: "Failed to create post" },
+      { status: 500 }
+    );
   }
 }

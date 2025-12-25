@@ -9,29 +9,24 @@ export async function POST(req: Request) {
   try {
     const { email, password } = await req.json();
 
-    if (!email || !password) {
+    if (!email?.trim() || !password?.trim()) {
         return NextResponse.json(
-            { message: "Missing required fields: email, password" }, 
+            { message: "Invalid input" }, 
             { status: 400 }
         )
     }
 
+     const normalizedEmail = email.trim().toLowerCase();
+
     const user = await prisma.user.findUnique({
-        where: { email }
+        where: { email: normalizedEmail }
     })
 
-    if(!user) {
-        return NextResponse.json(
-            { message: "Email not found." },
-            { status: 404 }
-        )
-    }
-
-    const checkPassword = await bcrypt.compare(password, user.password)
+    const checkPassword = user && await bcrypt.compare(password,user.password);
 
     if(!checkPassword) {
         return NextResponse.json(
-            { message: "Invalid username or password" },
+            { message: "Invalid credentials" },
             { status: 401 }
         )
     }
@@ -48,7 +43,7 @@ export async function POST(req: Request) {
 
     const response = NextResponse.json(
         { message: "Login successful!", role: user.role },
-        { status: 201 }
+        { status: 200 }
     )
 
     response.cookies.set("token", token, {
@@ -64,7 +59,7 @@ export async function POST(req: Request) {
   } catch (e) {
     console.error(e);
     return NextResponse.json(
-        { message: "Failed to login." }, 
+        { message: "Server error" }, 
         { status: 500 }
     );
   }
