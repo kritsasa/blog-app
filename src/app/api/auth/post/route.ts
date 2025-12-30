@@ -27,6 +27,8 @@ export async function GET(req: NextRequest) {
           createAt: true,
           author: { select: { id: true, name: true } },
           category: { select: { id: true, name: true } },
+
+          // จะได้ tag ที่คู่กับ postId นั้นๆ จากตาราง postTag
           tags: {
             select: {
               tag: { select: { id: true, name: true } },
