@@ -81,6 +81,13 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Invalid input" }, { status: 400 });
     }
 
+		if (title.length > 100) {
+      return NextResponse.json(
+        { message: "Comment too long" },
+        { status: 400 }
+      );
+    }
+
     const slug = slugify(title.trim(), {
       lower: true,
       strict: true,
