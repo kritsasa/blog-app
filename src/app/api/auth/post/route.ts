@@ -83,7 +83,7 @@ export async function POST(req: NextRequest) {
 
 		if (title.length > 100) {
       return NextResponse.json(
-        { message: "Comment too long" },
+        { message: "title too long" },
         { status: 400 }
       );
     }
