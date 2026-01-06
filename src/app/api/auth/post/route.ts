@@ -76,16 +76,13 @@ export async function POST(req: NextRequest) {
   const authorId = payload.id as number;
 
   try {
-    const { title, content, categoryId, tagIds } = await req.json();
+    const { title, content, categoryId, tagIds, imageUrl } = await req.json();
     if (!title?.trim() || !content?.trim() || !categoryId) {
       return NextResponse.json({ message: "Invalid input" }, { status: 400 });
     }
 
-		if (title.length > 100) {
-      return NextResponse.json(
-        { message: "title too long" },
-        { status: 400 }
-      );
+    if (title.length > 100) {
+      return NextResponse.json({ message: "title too long" }, { status: 400 });
     }
 
     const slug = slugify(title.trim(), {
@@ -93,12 +90,24 @@ export async function POST(req: NextRequest) {
       strict: true,
     });
 
+    const post = await prisma.post.findUnique({
+      where: { slug },
+    });
+
+    if (post) {
+      return NextResponse.json(
+        { message: "Post with the same title already exists" },
+        { status: 409 }
+      );
+    }
+
     await prisma.$transaction(async (tx) => {
       const newPost = await tx.post.create({
         data: {
           title: title.trim(),
           slug,
           content: content.trim(),
+          imageUrl: imageUrl?.trim() || null,
           authorId,
           categoryId,
         },

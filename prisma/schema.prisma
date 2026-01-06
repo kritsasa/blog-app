@@ -28,6 +28,7 @@ model Post {
   title      String
   slug       String     @unique
   content    String
+  imageUrl   String?
   authorId   Int
   // authorId reference with id from table User
   author     User       @relation(fields: [authorId], references: [id])
