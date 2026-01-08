@@ -11,10 +11,6 @@ export async function middleware(req: NextRequest) {
 
   const { pathname } = req.nextUrl;
 
-  if (pathname.startsWith("/dashboard")) {
-    return NextResponse.next();
-  }
-
   if (!token) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
@@ -30,10 +26,10 @@ export async function middleware(req: NextRequest) {
       if (payload.role === "ADMIN") {
         return NextResponse.next();
       }
-      return NextResponse.redirect(new URL("/dashborad", req.url));
+      return NextResponse.redirect(new URL("/", req.url));
     }
 
-    if (pathname.startsWith("/dashboard")) {
+    if (pathname.startsWith("/")) {
       return NextResponse.next();
     }
 

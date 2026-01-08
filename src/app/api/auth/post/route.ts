@@ -24,6 +24,7 @@ export async function GET(req: NextRequest) {
           title: true,
           slug: true,
           content: true,
+          imageUrl: true,
           createAt: true,
           author: { select: { id: true, name: true } },
           category: { select: { id: true, name: true } },
