@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
     ]);
 
     return NextResponse.json({
-      data: postsData,
+      postsData,
       pagination: {
         page,
         limit,

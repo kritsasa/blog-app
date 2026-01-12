@@ -12,8 +12,8 @@ export default function IsrPagination({
             page={page}
             hasPrev={page > 1}
             hasNext={page < totalPages}
-            prevHref={`/?page=${page - 1}`}
-            nextHref={`/?page=${page + 1}`}
+            prevHref={`?page=${page - 1}`}
+            nextHref={`?page=${page + 1}`}
         />
     )
 }
