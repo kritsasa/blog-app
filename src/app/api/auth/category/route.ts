@@ -2,6 +2,21 @@ import { NextResponse, NextRequest } from "next/server";
 import prisma from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
 
+export async function GET() {
+  try {
+    const categories = await prisma.category.findMany({
+      orderBy: { name: "asc" },
+    });
+    return NextResponse.json(categories, { status: 200 });
+  } catch (e) {
+    console.error("Fetch error:", e);
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(req: NextRequest) {
   const payload = await verifyToken(req);
   if (!payload) {

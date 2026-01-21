@@ -26,10 +26,10 @@ export async function middleware(req: NextRequest) {
       if (payload.role === "ADMIN") {
         return NextResponse.next();
       }
-      return NextResponse.redirect(new URL("/dashborad", req.url));
+      return NextResponse.redirect(new URL("/", req.url));
     }
 
-    if (pathname.startsWith("/dashboard")) {
+    if (pathname.startsWith("/")) {
       return NextResponse.next();
     }
 

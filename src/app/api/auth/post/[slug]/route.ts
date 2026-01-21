@@ -17,6 +17,7 @@ export async function GET(
         title: true,
         slug: true,
         content: true,
+        imageUrl: true,
         createAt: true,
         author: { select: { id: true, name: true } },
         category: { select: { id: true, name: true } },
@@ -100,7 +101,7 @@ export async function PUT(
 
     await prisma.$transaction(async (tx) => {
       const updatePost = await tx.post.update({
-        where: { slug: slugSearch },
+        where: { id: post.id },
         data: {
           title: title.trim(),
           slug,
