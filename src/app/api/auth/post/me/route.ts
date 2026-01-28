@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
 
     const [postsData, total] = await prisma.$transaction([
       prisma.post.findMany({
-        where: { authorId: authorId },
+        where: { authorId: user.id },
         skip,
         take: limit,
         orderBy: { createAt: "desc" },

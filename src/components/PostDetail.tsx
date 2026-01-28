@@ -2,6 +2,9 @@
 import Image from "next/image";
 import { cookies } from "next/headers"
 import { jwtVerify } from "jose";
+import DeleteCommentButton from "./DeleteCommentButton";
+import CreateComment from "./CreateComment";
+import EditCommentButton from "./EditCommentButton";
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "dev-secret"
@@ -12,9 +15,10 @@ type PostDetailProps = {
   post: {
     id: number;
     title: string;
+    slug: string;
     content: string;
     imageUrl: string | null;
-    author: { id:number; name: string };
+    author: { id: number; name: string };
     category: { name: string };
     tags: { tag: { id: number; name: string } }[];
     comments: {
@@ -25,10 +29,22 @@ type PostDetailProps = {
   };
 };
 
+type JwtPayload = {
+  id: number;
+  email: string;
+  role: "USER" | "ADMIN";
+};
+
 export default async function PostDetail({ post }: PostDetailProps) {
   const cookieStore = await cookies();
   const token = cookieStore.get("token")?.value as string
-  const { payload } = await jwtVerify(token, JWT_SECRET);
+  let payload = { id: 0, email: "", role: "USER" }
+  if (token) {
+    const verified = await jwtVerify(token, JWT_SECRET);
+    payload = verified.payload as JwtPayload;
+  }
+
+  console.log(post.slug)
 
   const isAdmin = payload.role === "ADMIN";
   const isOwnerPost = payload.id === post.author.id;
@@ -73,14 +89,7 @@ export default async function PostDetail({ post }: PostDetailProps) {
         <h2 className="text-xl font-semibold mb-4">ความคิดเห็น</h2>
 
         <div>
-          <textarea
-            placeholder="เขียนความคิดเห็น..."
-            className="w-full border rounded px-3 py-2 mb-2"
-            rows={4}
-          ></textarea>
-          <button className="bg-blue-500 text-white px-4 py-2 rounded">
-            ส่งความคิดเห็น
-          </button>
+          <CreateComment postId={post.id} postSlug={post.slug} payloadId={payload.id}/>
         </div>
 
         {post.comments.length === 0 && (
@@ -95,9 +104,10 @@ export default async function PostDetail({ post }: PostDetailProps) {
               </div>
               <p>{c.content}</p>
               { isAdmin || isOwnerComment(c.user.id) || isOwnerPost ? (
-                <button className="text-red-500 text-sm mt-2">
-                  ลบความคิดเห็น
-                </button>
+                <EditCommentButton commentId={c.id} postSlug={post.slug} payloadId={payload.id} />
+              ) : null}
+              {isAdmin || isOwnerComment(c.user.id) || isOwnerPost ? (
+                <DeleteCommentButton commentId={c.id} postSlug={post.slug} payloadId={payload.id} postId={post.id} />
               ) : null}
             </li>
           ))}

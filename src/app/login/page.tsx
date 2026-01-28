@@ -32,7 +32,7 @@ export default function LoginPage() {
                 if (response.data.role === 'ADMIN') {
                     router.push('/admin/dashboard');
                 } else {
-                    router.push('/dashboard')
+                    router.push('/')
                 }
             }
         } catch (error: any) {

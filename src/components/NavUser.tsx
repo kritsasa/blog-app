@@ -1,0 +1,45 @@
+"use client";
+import Link from "next/link";
+
+type Props = {
+  payload: {
+    id: number;
+    name: string;
+    email: string;
+    role: "USER" | "ADMIN";
+  } | null;
+};
+
+export default function NavUser({ payload }: Props) {
+  if (!payload) {
+    return (
+      <a
+        href="/login"
+        className="rounded-md border border-emerald-500/40 bg-emerald-500/10 px-4 py-1.5 text-smtext-emerald-400 hover:bg-emerald-500/20 transition"
+      >
+        Login
+      </a>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-4">
+      <span className="text-sm text-gray-200">
+        {payload.name}
+      </span>
+
+      <button
+        className="rounded-md border border-red-500/30 px-3 py-1.5 text-sm text-red-400 hover:bg-red-500/10 transition"
+      >
+        Logout
+      </button>
+
+      <Link
+        href="/dashboard/create"
+        className="rounded-md bg-emerald-500 px-4 py-1.5 text-sm font-medium text-black hover:bg-emerald-400 transition"
+      >
+        สร้างโพสต์ใหม่
+      </Link>
+    </div>
+  );
+}
