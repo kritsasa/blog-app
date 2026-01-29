@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import { logout } from "@/app/actions/logout";
+import { useRouter } from "next/navigation";
 
 type Props = {
   payload: {
@@ -11,11 +13,19 @@ type Props = {
 };
 
 export default function NavUser({ payload }: Props) {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.replace("/")
+    router.refresh();
+  }
+ 
   if (!payload) {
     return (
       <a
         href="/login"
-        className="rounded-md border border-emerald-500/40 bg-emerald-500/10 px-4 py-1.5 text-smtext-emerald-400 hover:bg-emerald-500/20 transition"
+        className="rounded-md border border-emerald-500/40 bg-emerald-500/10 px-4 py-1.5 text-sm text-emerald-400 hover:bg-emerald-500/20 transition"
       >
         Login
       </a>
@@ -30,6 +40,7 @@ export default function NavUser({ payload }: Props) {
 
       <button
         className="rounded-md border border-red-500/30 px-3 py-1.5 text-sm text-red-400 hover:bg-red-500/10 transition"
+        onClick={handleLogout}
       >
         Logout
       </button>

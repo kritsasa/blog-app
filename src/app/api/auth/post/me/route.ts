@@ -50,7 +50,9 @@ export async function GET(req: NextRequest) {
           },
         },
       }),
-      prisma.post.count(),
+      prisma.post.count({
+        where: { authorId: user.id },
+      }),
     ]);
 
     return NextResponse.json({
@@ -65,7 +67,7 @@ export async function GET(req: NextRequest) {
   } catch {
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

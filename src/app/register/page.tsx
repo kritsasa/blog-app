@@ -38,62 +38,64 @@ export default function RegisterPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-100">
-            <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
-                <h1 className="text-2xl font-bold text-center mb-6">Create Account</h1>
+        <div className="min-h-screen flex items-center justify-center bg-black">
+            <div className="w-full max-w-md rounded-2xl border border-emerald-900/40 bg-black/80 backdrop-blur shadow-xl p-8">
+                <h1 className="mb-6 text-center text-2xl font-bold tracking-wide text-emerald-400">Create Account</h1>
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Name</label>
+                        <label className="block text-sm font-medium text-gray-300">Name</label>
                         <input
                             type="text"
                             name="name"
                             value={form.name}
                             onChange={handleChange}
                             required
-                            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="mt-1 w-full rounded-lg border border-emerald-900/50 bg-black px-3 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Email</label>
+                        <label className="block text-sm font-medium text-gray-300">Email</label>
                         <input
                             type="email"
                             name="email"
                             value={form.email}
                             onChange={handleChange}
                             required
-                            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="mt-1 w-full rounded-lg border border-emerald-900/50 bg-black px-3 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         />
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700">Password</label>
+                        <label className="block text-sm font-medium text-gray-300">Password</label>
                         <input
                             type="password"
                             name="password"
                             value={form.password}
                             onChange={handleChange}
                             required
-                            className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            className="mt-1 w-full rounded-lg border border-emerald-900/50 bg-black px-3 py-2 text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500"
                         />
                     </div>
 
                     {message && (
-                        <p className="text-sm text-red-500">{message}</p>
+                        <p className="text-sm text-red-400">{message}</p>
                     )}
 
                     <button
                         type="submit"
-                        className="w-full rounded-lg bg-purple-600 py-2 text-white font-semibold hover:bg-purple-700 transition"
+                        className="w-full rounded-lg bg-black py-2 font-semibold text-emerald-500 hover:bg-emerald-500 hover:text-black transition duration-500"
                     >
                         Register
                     </button>
                 </form>
 
-                <p className="text-sm text-center text-gray-600 mt-6">
-                    Already have an account?{" "}
-                    <a href="/login" className="text-purple-600 hover:underline">
+                <p className="mt-6 text-center text-sm text-gray-400">
+                    {"Already have an account?"}{" "}
+                    <a
+                        href="/login"
+                        className="text-emerald-400 hover:text-emerald-300 hover:underline">
                         Login
                     </a>
                 </p>
