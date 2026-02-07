@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
 
-import React from 'react'
+import React from "react";
 import Link from "next/link";
 
 interface Props {
@@ -19,65 +19,98 @@ interface Post {
     imageUrl: string | null;
     createAt: string;
     category: { id: number; name: string } | null;
-    tags: { tag: { id: number; name: string; } }[];
+    tags: { tag: { id: number; name: string } }[];
 }
 
 function Dashboard({ data, loading, error, onDelete }: Props) {
     return (
         <>
-            {loading && <p className="p-6">Loading...</p>}
-            {error && <p className="p-6 text-red-500">เกิดข้อผิดพลาด: {error}</p>}
+            {loading && (
+                <p className="p-6 text-gray-400">Loading...</p>
+            )}
+
+            {error && (
+                <p className="p-6 text-red-500">
+                    เกิดข้อผิดพลาด: {error}
+                </p>
+            )}
 
             {data?.postsData?.length === 0 && (
                 <p className="text-gray-500">ยังไม่มีโพสต์</p>
             )}
 
-            <ul className="space-y-5">
+            <ul className="space-y-6">
                 {data?.postsData?.map((post) => (
                     <li
                         key={post.id}
-                        className="border rounded-lg overflow-hidden"
+                        className="
+                            overflow-hidden rounded-xl
+                            border border-neutral-800
+                            bg-neutral-900
+                            transition hover:border-emerald-500/50
+                        "
                     >
                         <div className="flex gap-4 p-4">
                             {/* image */}
-                            {post.imageUrl ? (
+                            {post.imageUrl && (
                                 <img
                                     src={post.imageUrl}
                                     alt={post.title}
-                                    className="w-32 h-24 object-cover rounded"
+                                    className="
+                                        h-24 w-32 shrink-0
+                                        rounded-lg object-cover
+                                        border border-neutral-800
+                                    "
                                 />
-                            ) : null}
+                            )}
 
                             {/* content */}
-                            <div className="flex-1 space-y-2">
-                                <div className="flex items-start justify-between gap-3">
+                            <div className="flex-1 space-y-3">
+                                <div className="flex items-start justify-between gap-4">
                                     <div>
-                                        <h2 className="font-semibold text-lg">{post.title}</h2>
+                                        <h2 className="text-lg font-semibold text-white">
+                                            {post.title}
+                                        </h2>
                                         <p className="text-xs text-gray-500">
                                             {new Date(post.createAt).toLocaleDateString()}
                                         </p>
                                     </div>
 
-                                    <div className="flex gap-3 shrink-0">
+                                    {/* actions */}
+                                    <div className="flex gap-3 shrink-0 text-sm">
                                         <Link
                                             href={`/posts/${post.slug}`}
-                                            className="text-sm text-blue-600 hover:underline"
+                                            className="
+                                                text-emerald-400
+                                                hover:text-emerald-300
+                                                transition
+                                            "
                                         >
                                             ดู
                                         </Link>
+
                                         <Link
                                             href={`/dashboard/edit/${post.slug}`}
-                                            className="text-sm text-gray-600 hover:underline"
+                                            className="
+                                                text-gray-400
+                                                hover:text-white
+                                                transition
+                                            "
                                         >
                                             แก้ไข
                                         </Link>
+
                                         <a
                                             href="#"
                                             onClick={(e) => {
                                                 e.preventDefault();
                                                 onDelete && onDelete(post.slug);
                                             }}
-                                            className="text-sm text-red-600 hover:underline"
+                                            className="
+                                                text-red-500
+                                                hover:text-red-400
+                                                transition
+                                            "
                                         >
                                             ลบ
                                         </a>
@@ -87,14 +120,32 @@ function Dashboard({ data, loading, error, onDelete }: Props) {
                                 {/* category + tags */}
                                 <div className="flex flex-wrap gap-2">
                                     {post.category && (
-                                        <span className="text-xs px-2 py-1 bg-gray-100 rounded">
+                                        <span
+                                            className="
+                                                rounded-full
+                                                bg-emerald-500/15
+                                                px-3 py-1
+                                                text-xs font-medium
+                                                text-emerald-400
+                                            "
+                                        >
                                             {post.category.name}
                                         </span>
                                     )}
+
                                     {post.tags.map((t) => (
                                         <span
                                             key={t.tag.id}
-                                            className="text-xs px-2 py-1 bg-blue-50 text-blue-600 rounded"
+                                            className="
+                                                rounded-full
+                                                bg-neutral-800
+                                                px-3 py-1
+                                                text-xs
+                                                text-gray-300
+                                                hover:bg-emerald-500/20
+                                                hover:text-emerald-300
+                                                transition
+                                            "
                                         >
                                             #{t.tag.name}
                                         </span>
@@ -102,7 +153,7 @@ function Dashboard({ data, loading, error, onDelete }: Props) {
                                 </div>
 
                                 {/* excerpt */}
-                                <p className="text-sm text-gray-700 line-clamp-2">
+                                <p className="text-sm text-gray-400 line-clamp-2">
                                     {post.content}
                                 </p>
                             </div>
@@ -111,7 +162,7 @@ function Dashboard({ data, loading, error, onDelete }: Props) {
                 ))}
             </ul>
         </>
-    )
+    );
 }
 
-export default Dashboard
+export default Dashboard;

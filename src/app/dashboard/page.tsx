@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -21,7 +20,7 @@ interface Post {
     imageUrl: string | null;
     createAt: string;
     category: { id: number; name: string } | null;
-    tags: { tag: { id: number; name: string; } }[];
+    tags: { tag: { id: number; name: string } }[];
 }
 
 interface Pagination {
@@ -33,39 +32,55 @@ interface Pagination {
 
 export default function MyPostsPage() {
     const [page, setPage] = useState(1);
-    const { data, loading, error, reFetch } = useFetch<PostResponse>(`/api/auth/post/me?page=${page}&limit=10`);
+    const { data, loading, error, reFetch } =
+        useFetch<PostResponse>(`/api/auth/post/me?page=${page}&limit=10`);
 
     const handleDelete = async (slug: string) => {
-        if (!confirm("คุณแน่ใจหรือว่าต้องการลบโพสต์นี้?")) {
-            return;
-        }
+        if (!confirm("คุณแน่ใจหรือว่าต้องการลบโพสต์นี้?")) return;
         try {
             await axios.delete(`/api/auth/post/${slug}`);
             reFetch();
         } catch (err) {
             console.error("Failed to delete post:", err);
         }
-    }
+    };
 
     return (
-        <div className="max-w-5xl mx-auto p-6">
-            <div className="flex items-center justify-between mb-6">
-                <h1 className="text-2xl font-bold">โพสต์ของฉัน</h1>
-                <Link
-                    href="/dashboard/create"
-                    className="px-4 py-2 bg-black text-white rounded hover:bg-gray-800"
-                >
-                    สร้างโพสต์ใหม่
-                </Link>
+        <div className="min-h-screen bg-black text-gray-200">
+            <div className="mx-auto max-w-5xl px-4 py-8">
+                {/* header */}
+                <div className="mb-6 flex items-center justify-between">
+                    <h1 className="text-2xl font-bold text-white">
+                        โพสต์ของฉัน
+                    </h1>
+
+                    <Link
+                        href="/dashboard/create"
+                        className="rounded-lg bg-emerald-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-emerald-400"
+                    >
+                        + สร้างโพสต์ใหม่
+                    </Link>
+                </div>
+
+                {/* content */}
+                <div className="rounded-xl bg-neutral-900 p-4 shadow-lg">
+                    <Dashboard
+                        data={data}
+                        loading={loading}
+                        error={error}
+                        onDelete={handleDelete}
+                    />
+                </div>
+
+                {/* pagination */}
+                <div className="mt-6 flex justify-center">
+                    <CsrPagination
+                        page={page}
+                        totalPages={data?.pagination.totalPages || 1}
+                        onPageChange={(page) => setPage(page)}
+                    />
+                </div>
             </div>
-
-            <Dashboard data={data} loading={loading} error={error} onDelete={handleDelete} />
-
-            <CsrPagination
-                page={page}
-                totalPages={data?.pagination.totalPages || 1}
-                onPageChange={(page) => setPage(page)}
-            />
         </div>
     );
 }

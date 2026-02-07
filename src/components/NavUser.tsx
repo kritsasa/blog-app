@@ -47,7 +47,7 @@ export default function NavUser({ payload }: Props) {
 
       <Link
         href="/dashboard/create"
-        className="text-xs sm:text-smrounded-md bg-emerald-500 px-4 py-1.5 font-medium text-black hover:bg-emerald-400 transition"
+        className="text-xs sm:text-sm rounded-md bg-emerald-500 px-4 py-1.5 font-medium text-black hover:bg-emerald-400 transition"
       >
         สร้างโพสต์ใหม่
       </Link>
