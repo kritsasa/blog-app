@@ -1,5 +1,4 @@
 import { NextResponse, NextRequest } from "next/server";
-import slugify from "slugify";
 import prisma from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
 
@@ -98,10 +97,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "title too long" }, { status: 400 });
     }
 
-    const slug = slugify(title.trim(), {
-      lower: true,
-      strict: true,
-    });
+    function toSlug(title: string) {
+      return title
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "-") // space → -
+        .replace(/[^\u0E00-\u0E7Fa-z0-9-]/g, "") // อนุญาต ไทย + อังกฤษ + เลข
+        .replace(/-+/g, "-") // กัน -- ซ้อน
+        .replace(/^-|-$/g, ""); // ลบ - หน้า/ท้าย
+    }
+
+    const slug = toSlug(title);
 
     const post = await prisma.post.findUnique({
       where: { slug },

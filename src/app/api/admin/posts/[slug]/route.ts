@@ -1,57 +1,10 @@
-import { NextResponse, NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
 
-export async function GET(
-  req: NextRequest,
-  { params }: { params: { slug: string } }
-) {
-  try {
-    const { slug } = await params;
-
-    const postsData = await prisma.post.findUnique({
-      where: { slug },
-      select: {
-        id: true,
-        title: true,
-        slug: true,
-        content: true,
-        imageUrl: true,
-        createAt: true,
-        author: { select: { id: true, name: true } },
-        category: { select: { id: true, name: true } },
-        tags: {
-          select: {
-            tag: { select: { id: true, name: true } },
-          },
-        },
-        comments: {
-          orderBy: { createdAt: "desc" },
-          select: {
-            id: true,
-            content: true,
-            createdAt: true,
-            user: {
-              select: { id: true, name: true },
-            },
-          },
-        },
-      },
-    });
-
-    if (!postsData) {
-      return NextResponse.json({ message: "Post not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(postsData, { status: 200 });
-  } catch {
-    return NextResponse.json({ message: "Failed to post." }, { status: 400 });
-  }
-}
-
 export async function PUT(
   req: NextRequest,
-  { params }: { params: Promise<{ slug: string }> }
+  { params }: { params: { slug: string } },
 ) {
   const payload = await verifyToken(req);
   if (!payload) {
@@ -60,15 +13,26 @@ export async function PUT(
 
   const user = await prisma.user.findUnique({
     where: { id: payload.id },
+    select: { role: true },
   });
 
   if (!user) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ message: "User notfound" }, { status: 404 });
+  }
+
+  if (user.role !== "ADMIN") {
+    return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
   try {
     const { slug: slugSearch } = await params;
-    const { title, content, categoryId, tagIds = [], imageUrl } = await req.json();
+    const {
+      title,
+      content,
+      categoryId,
+      tagIds = [],
+      imageUrl,
+    } = await req.json();
 
     const post = await prisma.post.findUnique({
       where: { slug: slugSearch },
@@ -79,18 +43,7 @@ export async function PUT(
     }
 
     if (!title?.trim() || !content?.trim() || !categoryId) {
-      return NextResponse.json(
-        { message: "Invalid input" },
-        { status: 400 }
-      );
-    }
-
-    
-    const isAdmin = user.role === "ADMIN";
-    const isOwner = post.authorId === user.id;
-    
-    if (!isAdmin && !isOwner) {
-      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
+      return NextResponse.json({ message: "Invalid input" }, { status: 400 });
     }
 
     function toSlug(title: string) {
@@ -134,20 +87,20 @@ export async function PUT(
 
     return NextResponse.json(
       { message: "Post update successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err) {
     console.error(err);
     return NextResponse.json(
       { message: "Internal server error" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: { params: { slug: string } },
 ) {
   const payload = await verifyToken(req);
   if (!payload) {
@@ -156,10 +109,15 @@ export async function DELETE(
 
   const user = await prisma.user.findUnique({
     where: { id: payload.id },
+    select: { role: true },
   });
 
   if (!user) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ message: "User notfound" }, { status: 404 });
+  }
+
+  if (user.role !== "ADMIN") {
+    return NextResponse.json({ message: "Forbidden" }, { status: 403 });
   }
 
   try {
@@ -171,13 +129,6 @@ export async function DELETE(
 
     if (!post) {
       return NextResponse.json({ message: "Post not found" }, { status: 404 });
-    }
-
-    const isAdmin = user.role === "ADMIN";
-    const isOwner = post.authorId === user.id;
-
-    if (!isAdmin && !isOwner) {
-      return NextResponse.json({ message: "Forbidden" }, { status: 403 });
     }
 
     await prisma.$transaction(async (tx) => {
@@ -196,13 +147,13 @@ export async function DELETE(
 
     return NextResponse.json(
       { message: "Post delete successfully" },
-      { status: 200 }
+      { status: 200 },
     );
   } catch (err) {
     console.error(err);
     return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 }
+      { messahe: "Internal server error" },
+      { status: 500 },
     );
   }
 }

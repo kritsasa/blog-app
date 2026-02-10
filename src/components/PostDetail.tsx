@@ -44,8 +44,6 @@ export default async function PostDetail({ post }: PostDetailProps) {
     payload = verified.payload as JwtPayload;
   }
 
-  console.log(post.slug)
-
   const isAdmin = payload.role === "ADMIN";
   const isOwnerPost = payload.id === post.author.id;
   const isOwnerComment = (commentUserId: number) => payload.id === commentUserId;
