@@ -51,6 +51,15 @@ export default function NavUser({ payload }: Props) {
       >
         สร้างโพสต์ใหม่
       </Link>
+
+      { payload.role === "ADMIN" && (
+        <Link
+          href={'/admin/users'}
+          className="text-xs sm:text-sm rounded-md bg-emerald-500 px-4 py-1.5 font-medium text-black hover:bg-emerald-400 transition"
+        >
+          Admin Dashboard
+        </Link>
+      )}
     </div>
   );
 }

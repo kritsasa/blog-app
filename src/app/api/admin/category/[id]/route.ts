@@ -2,7 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { verifyToken } from "@/lib/auth";
 
-export async function GET(req: NextRequest) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { id: string } },
+) {
   const payload = await verifyToken(req);
   if (!payload) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -22,21 +25,27 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const usersCount = await prisma.user.count({
-      where: { role: "USER" },
-    });
-    const postsCount = await prisma.post.count();
-    const commentsCount = await prisma.comment.count();
-    const categoriesCount = await prisma.category.count();
-    const tagsCount = await prisma.tag.count();
+    const { id } = await params;
 
-    return NextResponse.json({
-      usersCount,
-      postsCount,
-      commentsCount,
-      categoriesCount,
-      tagsCount,
+    const category = await prisma.category.findUnique({
+      where: { id: Number(id) },
     });
+
+    if (!category) {
+      return NextResponse.json(
+        { message: "Category not found" },
+        { status: 404 },
+      );
+    }
+
+    await prisma.category.delete({
+      where: { id: Number(id) },
+    });
+
+    return NextResponse.json(
+      { message: "Category deleted successfully" },
+      { status: 200 },
+    );
   } catch (err) {
     console.error(err);
     return NextResponse.json(

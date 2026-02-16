@@ -30,7 +30,7 @@ export default function LoginPage() {
             const response = await axios.post('api/login', form)
             if (response.status === 200) {
                 if (response.data.role === 'ADMIN') {
-                    router.replace('/admin/dashboard');
+                    router.replace('/admin/users');
                 } else {
                     router.replace('/')
                 }

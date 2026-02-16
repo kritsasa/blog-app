@@ -22,11 +22,29 @@ export async function GET(req: NextRequest) {
   }
 
   try {
+    const { searchParams } = new URL(req.url);
+
+    const page = Number(searchParams.get("page") ?? 1);
+    const limit = Number(searchParams.get("limit") ?? 10);
+
+    const skip = (page - 1) * limit;
+
     const users = await prisma.user.findMany({
+      where: { role: "USER" },
+      skip: skip,
+      take: limit,
+    });
+
+    const total = await prisma.user.count({
       where: { role: "USER" },
     });
 
-    return NextResponse.json(users);
+    return NextResponse.json({
+      users,
+      pagination: {
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (err) {
     console.error(err);
     return NextResponse.json(
@@ -35,4 +53,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-
