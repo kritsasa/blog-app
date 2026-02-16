@@ -39,12 +39,15 @@ export async function GET(req: NextRequest) {
       where: { role: "USER" },
     });
 
-    return NextResponse.json({
-      users,
-      pagination: {
-        totalPages: Math.ceil(total / limit),
+    return NextResponse.json(
+      {
+        users,
+        pagination: {
+          totalPages: Math.ceil(total / limit),
+        },
       },
-    });
+      { status: 200 },
+    );
   } catch (err) {
     console.error(err);
     return NextResponse.json(

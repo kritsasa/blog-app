@@ -22,8 +22,29 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const posts = await prisma.post.findMany();
-    return NextResponse.json(posts, { status: 200 });
+    const { searchParams } = new URL(req.url);
+
+    const page = Number(searchParams.get("page") ?? 1);
+    const limit = Number(searchParams.get("limit") ?? 10);
+
+    const skip = (page - 1) * limit;
+
+    const posts = await prisma.post.findMany({
+      skip: skip,
+      take: limit,
+    });
+
+    const total = await prisma.post.count();
+
+    return NextResponse.json(
+      {
+        posts,
+        pagination: {
+          totalPages: Math.ceil(total / limit),
+        },
+      },
+      { status: 200 },
+    );
   } catch (err) {
     console.error(err);
     return NextResponse.json(
