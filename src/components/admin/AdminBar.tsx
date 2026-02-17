@@ -17,7 +17,7 @@ function AdminBar() {
         { name: 'Users', count: data?.usersCount || 0, href: '/admin/users' },
         { name: 'Posts', count: data?.postsCount || 0, href: '/admin/posts' },
         { name: 'Comments', count: data?.commentsCount || 0, href: '/admin/comments' },
-        { name: 'Categories', count: data?.categoriesCount || 0, href: '/admin/categorys' },
+        { name: 'Categories', count: data?.categoriesCount || 0, href: '/admin/categories' },
         { name: 'Tags', count: data?.tagsCount || 0, href: '/admin/tags' }
     ];
 

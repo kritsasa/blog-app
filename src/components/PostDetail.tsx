@@ -19,7 +19,7 @@ type PostDetailProps = {
     content: string;
     imageUrl: string | null;
     author: { id: number; name: string };
-    category: { name: string };
+    category: { id:number; name: string };
     tags: { tag: { id: number; name: string } }[];
     comments: {
       id: number;
@@ -53,7 +53,7 @@ export default async function PostDetail({ post }: PostDetailProps) {
       <h1 className="text-3xl font-bold">{post.title}</h1>
 
       <div className="text-sm text-gray-500">
-        โดย {post.author.name} · หมวดหมู่ {post.category.name}
+        โดย {post.author.name} · หมวดหมู่ {post.category?.name ?? "ไม่มีหมวดหมู่"}
       </div>
 
       {post.imageUrl && (

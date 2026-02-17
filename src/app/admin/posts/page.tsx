@@ -117,12 +117,12 @@ export default function AdminPostsPage() {
       </div>
 
       <div className="mt-6 flex justify-center">
-              <CsrPagination
-                page={page}
-                totalPages={data?.pagination.totalPages || 1}
-                onPageChange={(page) => setPage(page)}
-              />
-            </div>
+        <CsrPagination
+          page={page}
+          totalPages={data?.pagination.totalPages || 1}
+          onPageChange={(page) => setPage(page)}
+        />
+      </div>
     </div>
   )
 }
