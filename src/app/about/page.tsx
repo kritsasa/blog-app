@@ -1,3 +1,5 @@
+"use client"
+
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -72,22 +74,14 @@ export default function AboutPage() {
 
           <Link
             href="/contact"
-            className="mt-8 inline-flex items-center gap-2 rounded-lg
-                       border border-emerald-500 px-4 py-3
-                       font-semibold text-emerald-500
-                       hover:bg-emerald-500 hover:text-black
-                       transition mr-4"
+            className="mt-8 inline-flex items-center gap-2 rounded-lg border border-emerald-500 px-4 py-3 font-semibold text-emerald-500 hover:bg-emerald-500 hover:text-black transition mr-4"
           >
             Contact Me
           </Link>
           <Link
             href="https://github.com/kritsada19"
             target="_blank"
-            className="mt-8 inline-flex items-center gap-2 rounded-lg
-                       border border-emerald-500 px-4 py-3
-                       font-semibold text-emerald-500
-                       hover:bg-emerald-500 hover:text-black
-                       transition"
+            className="mt-8 inline-flex items-center gap-2 rounded-lg border border-emerald-500 px-4 py-3 font-semibold text-emerald-500 hover:bg-emerald-500 hover:text-black transition"
           >
             Github <FaGithub />
           </Link>
