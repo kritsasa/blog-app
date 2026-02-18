@@ -8,7 +8,7 @@ interface Props {
     data: { postsData: Post[] } | null;
     loading: boolean;
     error: string | null;
-    onDelete?: (slug: string) => void;
+    onDelete: (slug: string) => void;
 }
 
 interface Post {
@@ -104,7 +104,7 @@ function Dashboard({ data, loading, error, onDelete }: Props) {
                                             href="#"
                                             onClick={(e) => {
                                                 e.preventDefault();
-                                                onDelete && onDelete(post.slug);
+                                                onDelete(post.slug);
                                             }}
                                             className="
                                                 text-red-500
