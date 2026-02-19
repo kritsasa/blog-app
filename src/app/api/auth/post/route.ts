@@ -23,14 +23,14 @@ export async function GET(req: NextRequest) {
           : {},
         skip: skip,
         take: limit,
-        orderBy: { createAt: "desc" },
+        orderBy: { createdAt: "desc" },
         select: {
           id: true,
           title: true,
           slug: true,
           content: true,
           imageUrl: true,
-          createAt: true,
+          createdAt: true,
           author: { select: { id: true, name: true } },
           category: { select: { id: true, name: true } },
 
